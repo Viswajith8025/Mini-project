@@ -5,6 +5,11 @@ import ProfileDropdown from "./ProfileDropdown"; // Import the updated ProfileDr
 const Home2 = () => {
   const navigate = useNavigate();
 
+  // Function to handle navigation
+  const handleNavigation = (path) => {
+    navigate(path);
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen">
       {/* Navbar */}
@@ -14,17 +19,35 @@ const Home2 = () => {
           <span className="text-blue-500">EYE</span>
         </h1>
         <ul className="flex space-x-8">
-          <li className="cursor-pointer text-gray-700 hover:text-blue-500 transition duration-300">
+          <li
+            className="cursor-pointer text-gray-700 hover:text-blue-500 transition duration-300"
+            onClick={() => handleNavigation("/cehome")}
+          >
             Home
           </li>
-          <li className="cursor-pointer text-gray-700 hover:text-blue-500 transition duration-300">
+          <li
+            className="cursor-pointer text-gray-700 hover:text-blue-500 transition duration-300"
+            onClick={() => handleNavigation("/cemycomplaints")}
+          >
             My Complaints
           </li>
-          <li className="cursor-pointer text-gray-700 hover:text-blue-500 transition duration-300">
+          <li
+            className="cursor-pointer text-gray-700 hover:text-blue-500 transition duration-300"
+            onClick={() => handleNavigation("/about")}
+          >
             About
           </li>
-          <li className="cursor-pointer text-gray-700 hover:text-blue-500 transition duration-300">
+          <li
+            className="cursor-pointer text-gray-700 hover:text-blue-500 transition duration-300"
+            onClick={() => handleNavigation("/contact")}
+          >
             Contact
+          </li>
+          <li
+            className="cursor-pointer text-gray-700 hover:text-blue-500 transition duration-300"
+            onClick={() => handleNavigation("/cereportissue")}
+          >
+            Register Complaint
           </li>
         </ul>
 
@@ -46,6 +69,7 @@ const Home2 = () => {
                 <button
                   key={index}
                   className="bg-white text-black px-6 py-3 rounded-lg hover:bg-blue-500 hover:text-white transition duration-300"
+                  onClick={() => handleNavigation("/cereportissue")}
                 >
                   {category}
                 </button>
@@ -88,9 +112,9 @@ const Home2 = () => {
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-            <p>Home</p>
-            <p>My Complaints</p>
-            <p>About</p>
+            <p onClick={() => handleNavigation("/home")}>Home</p>
+            <p onClick={() => handleNavigation("/cemycomplaints")}>My Complaints</p>
+            <p onClick={() => handleNavigation("/about")}>About</p>
           </div>
         </div>
         <p className="mt-8 text-center text-sm text-gray-400">

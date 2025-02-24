@@ -1,23 +1,68 @@
+import React, { useState, useEffect } from "react";
 import celogofull from '../CE/img/celogofull.png';
-import { useState } from "react";
-
-const formDataState = {
-  fullName: "Karthik km",
-  mobileNumber: "773778025",
-  email: "karthik@gmail.com",
-  dob: "2003-10-01",
-  password: "password",
-  state: "",
-  address: "chimbuveetilmon cheekilode po",
-  idProof: "",
-  idProofNumber: "123456789",
-};
+import axios from "axios"; // Import Axios for API calls
 
 const CEUserprofile = () => {
-  const [formData, setFormData] = useState(formDataState);
+  const [formData, setFormData] = useState({
+    fullName: "",
+    mobileNumber: "",
+    email: "",
+    dob: "",
+    password: "",
+    state: "",
+    address: "",
+    idProof: "",
+    idProofNumber: "",
+  });
+  const [error, setError] = useState(""); // State for error messages
+  const [isEditing, setIsEditing] = useState(false); // State to toggle edit mode
+
+  // Fetch user profile data on component mount
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user")); // Get user data from localStorage
+    if (user) {
+      setFormData(user); // Pre-fill the form with user data
+    } else {
+      // If no user data in localStorage, fetch from the backend
+      const fetchProfile = async () => {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await axios.get("http://localhost:5000/api/user/profile", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          setFormData(response.data); // Set the fetched data to state
+        } catch (error) {
+          setError("Failed to fetch profile data");
+        }
+      };
+      fetchProfile();
+    }
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true); // Enable edit mode
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.put("http://localhost:5000/api/user/profile", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      alert(response.data.message); // Show success message
+      setIsEditing(false); // Disable edit mode
+    } catch (error) {
+      setError("Failed to update profile");
+    }
   };
 
   return (
@@ -25,13 +70,13 @@ const CEUserprofile = () => {
       <div className="bg-white p-8 rounded-2xl shadow-lg w-[80%] max-w-4xl">
         {/* Updated Header with Logo */}
         <h1 className="text-3xl font-bold text-center mb-6 flex items-center justify-center">
-          {/* <span className="mr-2">📹</span>
-          <span className="text-gray-800">Civic</span>
-          <span className="text-blue-500">EYE</span> */}
           <img src={celogofull} alt="Civic Eye Logo" className="h-10 w-auto ml-3" />
         </h1>
 
-        {/* Rest of the form remains unchanged */}
+        {/* Display error message */}
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+
+        {/* Profile Form */}
         <div className="grid grid-cols-2 gap-6">
           <div className="flex flex-col items-start text-left">
             <label className="block text-sm font-medium text-gray-700">Full Name</label>
@@ -41,33 +86,19 @@ const CEUserprofile = () => {
               value={formData.fullName}
               onChange={handleChange}
               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={!isEditing}
             />
           </div>
 
           <div className="flex flex-col items-start text-left">
             <label className="block text-sm font-medium text-gray-700">State</label>
-            <select
+            <input
+              type="text"
               name="state"
               value={formData.state}
-              onChange={handleChange}
-              className="w-full p-2 border rounded-md bg-white cursor-pointer"
-            >
-              <option value="">Select District</option>
-              <option value="Kasargod">Kasargod</option>
-              <option value="Kannur">Kannur</option>
-              <option value="Wayanad">Wayanad</option>
-              <option value="Kozhikode">Kozhikode</option>
-              <option value="Malappuram">Malappuram</option>
-              <option value="Palakkad">Palakkad</option>
-              <option value="Thrissur">Thrissur</option>
-              <option value="Ernakulam">Ernakulam</option>
-              <option value="Idukki">Idukki</option>
-              <option value="Kottayam">Kottayam</option>
-              <option value="Alappuzha">Alappuzha</option>
-              <option value="Pathanamthitta">Pathanamthitta</option>
-              <option value="Kollam">Kollam</option>
-              <option value="Thiruvananthapuram">Thiruvananthapuram</option>
-            </select>
+              className="w-full p-2 border rounded-md bg-gray-100"
+              readOnly
+            />
           </div>
 
           <div className="flex flex-col items-start text-left">
@@ -78,6 +109,7 @@ const CEUserprofile = () => {
               value={formData.mobileNumber}
               onChange={handleChange}
               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={!isEditing}
             />
           </div>
 
@@ -89,6 +121,7 @@ const CEUserprofile = () => {
               value={formData.address}
               onChange={handleChange}
               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={!isEditing}
             />
           </div>
 
@@ -100,6 +133,7 @@ const CEUserprofile = () => {
               value={formData.email}
               onChange={handleChange}
               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={!isEditing}
             />
           </div>
 
@@ -110,10 +144,11 @@ const CEUserprofile = () => {
               value={formData.idProof}
               onChange={handleChange}
               className="w-full p-2 border rounded-md bg-white cursor-pointer"
+              disabled={!isEditing}
             >
               <option value="">Select ID Proof</option>
               <option value="Aadhaar">Aadhaar</option>
-              <option value="Drivers licence">Driving Licence</option>
+              <option value="Driving Licence">Driving Licence</option>
               <option value="PAN Card">PAN Card</option>
             </select>
           </div>
@@ -121,11 +156,11 @@ const CEUserprofile = () => {
           <div className="flex flex-col items-start text-left">
             <label className="block text-sm font-medium text-gray-700">D.O.B</label>
             <input
-              type="date"
+              type="text"
               name="dob"
               value={formData.dob}
-              onChange={handleChange}
-              className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-2 border rounded-md bg-gray-100"
+              readOnly
             />
           </div>
 
@@ -137,6 +172,7 @@ const CEUserprofile = () => {
               value={formData.idProofNumber}
               onChange={handleChange}
               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={!isEditing}
             />
           </div>
 
@@ -148,17 +184,27 @@ const CEUserprofile = () => {
               value={formData.password}
               onChange={handleChange}
               className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={!isEditing}
             />
           </div>
         </div>
 
         <div className="flex justify-center gap-4 mt-6">
-          <button className="bg-blue-500 text-white px-6 py-2 rounded-2xl hover:bg-blue-600 transition duration-200">
-            EDIT
-          </button>
-          <button className="bg-blue-500 text-white px-6 py-2 rounded-2xl hover:bg-blue-600 transition duration-200">
-            SUBMIT
-          </button>
+          {isEditing ? (
+            <button
+              onClick={handleSubmit}
+              className="bg-blue-500 text-white px-6 py-2 rounded-2xl hover:bg-blue-600 transition duration-200"
+            >
+              SAVE
+            </button>
+          ) : (
+            <button
+              onClick={handleEdit}
+              className="bg-blue-500 text-white px-6 py-2 rounded-2xl hover:bg-blue-600 transition duration-200"
+            >
+              EDIT
+            </button>
+          )}
         </div>
       </div>
     </div>

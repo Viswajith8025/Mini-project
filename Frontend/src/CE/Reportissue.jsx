@@ -1,18 +1,34 @@
 import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ReportIssueForm = () => {
   const fileInputRef = useRef(null);
   const [fileName, setFileName] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false); // State to track submission
+  const navigate = useNavigate(); // Hook for navigation
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setFileName(file.name); 
+      setFileName(file.name);
     }
   };
 
   const triggerFileSelect = () => {
     fileInputRef.current.click();
+  };
+
+  const handleCancel = () => {
+    navigate("/cehome2"); // Redirect to home page
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // Simulate form submission (replace with actual API call)
+    setIsSubmitted(true);
+    setTimeout(() => {
+      navigate("/cehome2"); // Redirect to home page after 2 seconds
+    }, 2000);
   };
 
   return (
@@ -25,18 +41,30 @@ const ReportIssueForm = () => {
           Our platform empowers users to submit complaints with ease, offering
           tools to upload multimedia for comprehensive issue reporting.
         </p>
-        <form className="space-y-4">
+
+        {/* Success Message */}
+        {isSubmitted && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            Complaint submitted successfully! Redirecting to home page...
+          </div>
+        )}
+
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label className="block font-medium text-gray-700">Description</label>
             <input
               type="text"
               className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              required
             />
           </div>
           <div>
             <label className="block font-medium text-gray-700">Complaint type</label>
-            <select className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
-              <option>Select type</option>
+            <select
+              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              required
+            >
+              <option value="">Select type</option>
               <optgroup label="Vehicle">
                 <option>Riding without helmets</option>
                 <option>Reckless driving</option>
@@ -69,6 +97,7 @@ const ReportIssueForm = () => {
             <input
               type="text"
               className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              required
             />
           </div>
           <div>
@@ -97,6 +126,7 @@ const ReportIssueForm = () => {
             </button>
             <button
               type="button"
+              onClick={handleCancel}
               className="w-1/2 px-3 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 transition"
             >
               Cancel
