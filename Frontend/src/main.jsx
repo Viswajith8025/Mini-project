@@ -12,6 +12,7 @@ import CEUserprofile from './CE/Userprofile.jsx'
 import CEHome from './CE/Home.jsx'
 import InvoiceApp from './CE/Invoice.jsx'
 import MyComplaints from './CE/Mycomplaints.jsx'
+import Home3 from './CE/Home3.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -26,6 +27,8 @@ createRoot(document.getElementById('root')).render(
       <Route path="/ceuserprofile" element={<CEUserprofile/>} />
       <Route path="/invoice" element={<InvoiceApp />} />
       <Route path="/cemycomplaints" element={<MyComplaints/>} />
+      <Route path="/cehome3" element={<Home3/>} />
+
 
 
 

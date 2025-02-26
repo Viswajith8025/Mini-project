@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios"; // Import Axios for API calls
 
 const ReportIssueForm = () => {
   const fileInputRef = useRef(null);
@@ -22,13 +23,42 @@ const ReportIssueForm = () => {
     navigate("/cehome2"); // Redirect to home page
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // Simulate form submission (replace with actual API call)
-    setIsSubmitted(true);
-    setTimeout(() => {
-      navigate("/cehome2"); // Redirect to home page after 2 seconds
-    }, 2000);
+
+    // Create FormData to handle file upload
+    const formData = new FormData();
+    formData.append("description", event.target.description.value);
+    formData.append("type", event.target.type.value);
+    formData.append("location", event.target.location.value);
+    if (fileInputRef.current.files[0]) {
+      formData.append("proof", fileInputRef.current.files[0]); // Append the file
+    }
+
+    try {
+      const token = localStorage.getItem("token"); // Get the token from localStorage
+      if (!token) {
+        navigate("/login"); // Redirect to login if no token is found
+        return;
+      }
+
+      // Send the complaint data to the backend
+      const response = await axios.post("http://localhost:5000/api/complaint/submit", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // Required for file uploads
+          Authorization: `Bearer ${token}`, // Attach the token for authentication
+        },
+      });
+
+      // Handle success
+      setIsSubmitted(true);
+      setTimeout(() => {
+        navigate("/cehome2"); // Redirect to home page after 2 seconds
+      }, 2000);
+    } catch (error) {
+      console.error("Error submitting complaint:", error);
+      alert("Failed to submit complaint. Please try again.");
+    }
   };
 
   return (
@@ -54,6 +84,7 @@ const ReportIssueForm = () => {
             <label className="block font-medium text-gray-700">Description</label>
             <input
               type="text"
+              name="description"
               className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
               required
             />
@@ -61,6 +92,7 @@ const ReportIssueForm = () => {
           <div>
             <label className="block font-medium text-gray-700">Complaint type</label>
             <select
+              name="type"
               className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
               required
             >
@@ -96,6 +128,7 @@ const ReportIssueForm = () => {
             <label className="block font-medium text-gray-700">Location</label>
             <input
               type="text"
+              name="location"
               className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
               required
             />
